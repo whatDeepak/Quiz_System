@@ -12,16 +12,16 @@ const guestRoutes = [
     label: "Dashboard",
     href: "/dashboard",
   },
-  {
-    icon: Compass,
-    label: "Browse",
-    href: "/browse",
-  },
-  {
-    icon: Heart,
-    label: "Collections",
-    href: "/collections/favorites",
-  },
+  // {
+  //   icon: Compass,
+  //   label: "Browse",
+  //   href: "/browse",
+  // },
+  // {
+  //   icon: Heart,
+  //   label: "Collections",
+  //   href: "/collections/favorites",
+  // },
   {
     icon: FaChalkboardTeacher,
     label: "Instructors",
