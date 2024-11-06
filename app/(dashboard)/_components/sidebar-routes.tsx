@@ -32,8 +32,8 @@ const guestRoutes = [
 const teacherRoutes = [
   {
     icon: List,
-    label: "Courses",
-    href: "/teacher/courses",
+    label: "Quizzes",
+    href: "/teacher/quiz",
   },
   {
     icon: BarChart,

@@ -108,19 +108,6 @@ const Dashboard = () => {
         <div className="flex-1 p-4 space-y-6 md:mr-72">
           <DashboardCoursesCard userId={user.id!} />
         </div>
-
-        <div className=" hidden md:block fixed right-0 top-[80px] bottom-0 w-64 p-4 space-y-4 md:w-72 bg-white shadow-lg">
-          <div className="min-h-[326px]">
-            <CalendarDateRangePicker checkInDates={checkInDates} />
-          </div>
-          {chartData.data.length === 0 || chartData.labels.length === 0 ? (
-            <div className="border border-gray-400 pt-0 rounded-xl my-auto h-[300px] flex items-center justify-center">
-              <p>No data available</p>
-            </div>
-          ) : (
-            <DoughnutChart labels={chartData.labels} data={chartData.data} />
-          )}
-        </div>
       </div>
     </>
   );

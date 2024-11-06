@@ -57,9 +57,9 @@ export default withUt({
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        'custom-primary':'#9C88FB',
+        'custom-primary':'#0369a0',
         'input-border': '#5925DC',
-        'active': '#EEEAFE',
+        'active': '#edf4fe',
         'text-secondary': '#1E265E',
       },
       borderRadius: {

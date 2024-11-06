@@ -18,10 +18,13 @@ export async function POST(
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const course = await db.course.create({
+    const course = await db.quiz.create({
       data: {
         userId,
         title,
+      },
+      select: {
+        id: true,  // Ensure `id` is selected
       }
     });
 
@@ -31,3 +34,8 @@ export async function POST(
     return new NextResponse("Internal Error", { status: 500 });
   }
 }
+
+
+
+
+

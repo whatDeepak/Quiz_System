@@ -14,8 +14,8 @@ const poppins = Poppins({
 
 
 export const metadata: Metadata = {
-  title: 'Education',
-  description: 'An LMS Platform',
+  title: 'Quiz System',
+  description: 'A Quiz System',
 }
 
 export default async function RootLayout({
