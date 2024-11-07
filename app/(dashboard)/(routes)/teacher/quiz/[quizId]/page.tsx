@@ -1,6 +1,6 @@
 import { IconBadge } from "@/components/icon-badge";
 import { db } from "@/lib/db";
-import { CircleHelp, LayoutDashboard, ListChecks, File } from "lucide-react";
+import { CircleHelp, LayoutDashboard, ListChecks, File, ArrowLeft } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { currentUser } from "@/lib/auth";
@@ -9,6 +9,7 @@ import { Banner } from "@/components/banner";
 import { QuizTitleForm } from "./_components/quiz-title-form";
 import { QuizQuestionsForm } from "./_components/quiz-question-form";
 import { QuizActions } from "./_components/quiz-actions";
+import Link from "next/link";
 
 const CourseIdPage = async ({
     params
@@ -59,13 +60,13 @@ const CourseIdPage = async ({
       <div className="p-6">
         <div className="flex items-center justify-between">
           <div className="w-full">
-            {/* <Link
-              href={`/teacher/courses/${params.courseId}/chapters/${params.chapterId}`}
+            <Link
+              href={`/teacher/quiz`}
               className="flex items-center text-sm hover:opacity-75 transition mb-6"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to chapter setup
-            </Link> */}
+              Back 
+            </Link>
             <div className="flex items-center justify-between w-full">
               <div className="flex flex-col gap-y-2">
                 <h1 className="text-2xl font-medium">
