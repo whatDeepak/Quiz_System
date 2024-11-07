@@ -40,21 +40,25 @@ const CreatePage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       const response = await axios.post("/api/courses", values);
-      router.push(`/teacher/courses/${response.data.id}`);
-      toast.success("Course created");
+      if (response.data?.id) {
+        router.push(`/teacher/quiz/${response.data.id}`);
+        toast.success("Course created");
+      } else {
+        toast.error("Failed to retrieve quiz ID");
+      }
     } catch {
       toast.error("Something went wrong");
     }
   }
 
-  return ( 
+  return (
     <div className="max-w-5xl mx-auto flex md:items-center md:justify-center h-full p-6">
       <div>
         <h1 className="text-2xl">
-          Name your course
+          Name your Quiz
         </h1>
         <p className="text-sm text-slate-600">
-          What would you like to name your course? Don&apos;t worry, you can change this later.
+          What would you like to name your quiz? Don&apos;t worry, you can change this later.
         </p>
         <Form {...form}>
           <form
@@ -72,12 +76,12 @@ const CreatePage = () => {
                   <FormControl>
                     <Input
                       disabled={isSubmitting}
-                      placeholder="e.g. 'Advanced web development'"
+                      placeholder="e.g. 'Advanced web development Quiz'"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    What will you teach in this course?
+                    What will you ask in this quiz?
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -103,7 +107,7 @@ const CreatePage = () => {
         </Form>
       </div>
     </div>
-   );
+  );
 }
- 
+
 export default CreatePage;
