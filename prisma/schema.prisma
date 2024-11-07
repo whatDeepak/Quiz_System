@@ -55,18 +55,19 @@ model Quiz {
   title       String
   description String?
   isPublished Boolean @default(false)
+  isActive    Boolean @default(false) // New field for active status
+  accessCode  String?  @unique         // New field for access code
 
-  userId   String
-  questions    Question[]
-  quizAttempts QuizAttempt[]
+  userId      String
+  questions   Question[] @relation("QuizQuestions")  // Cascade delete for questions
+  quizAttempts QuizAttempt[] @relation("QuizAttempts") // Cascade delete for quiz attempts
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@index([userId])
   @@fulltext([title])
 }
-
 
 model Question {
   id         String   @id @default(cuid()) @map("_id")
@@ -79,7 +80,7 @@ model Question {
   answer     String?  // Single answer field for NORMAL questions
 
   quizId     String
-  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quiz       Quiz     @relation("QuizQuestions", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for questions
 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -87,22 +88,22 @@ model Question {
   @@index([quizId])
 }
 
-enum QuestionType {
-  NORMAL
-  MCQ
-}
-
 model QuizAttempt {
   id         String   @id @default(cuid()) @map("_id")
   userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
   quizId     String
-  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  quiz       Quiz     @relation("QuizAttempts", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
   score      Int
   answers    Json     // Store answers in JSON format
   createdAt  DateTime @default(now())
 
   @@unique([userId, quizId])
+}
+
+enum QuestionType {
+  NORMAL
+  MCQ
 }
 
 model Notification {

@@ -11,7 +11,7 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const ownQuiz= await db.quiz.findUnique({
+    const ownQuiz = await db.quiz.findUnique({
       where: {
         id: params.quizId,
         userId,
@@ -22,12 +22,14 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
+    // Update quiz to be unpublished and set accessCode to null
     const unpublishedQuiz = await db.quiz.update({
       where: {
         id: params.quizId,
       },
       data: {
         isPublished: false,
+        accessCode: null, // Set accessCode to null
       },
     });
 

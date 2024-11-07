@@ -56,42 +56,6 @@ const Dashboard = () => {
     };
     checkRollNo();
   }, [user]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `/api/analytics/doughnutData?userId=${user.id}`
-        );
-        const data = await response.json();
-
-        if (response.ok) {
-          setChartData({ labels: data.labels, data: data.data });
-        } else {
-          console.error("Failed to fetch chart data:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching chart data:", error);
-      }
-    };
-    const dailyCheckIn=async () => {
-     
-      try {
-           const response= await axios.post(`/api/user/trackUserActivity`);
-           setCheckInDates(response.data.checkInDates);
-          if(response.data.message==="First time" && !checkInShown){
-         toast.success("Daily Check-in");
-            setCheckInShown(true);
-          }
-      } catch (error) {
-          console.error("Error tracking daily check-In progress:", error);
-      }
-   
-    }
-
-    fetchData();
-   dailyCheckIn();
-  }, [user.id,checkInShown]);
   
   const handleCloseDialog = () => {
     // Close the Dialog

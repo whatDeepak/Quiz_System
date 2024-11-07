@@ -41,7 +41,7 @@ const CreatePage = () => {
     try {
       const response = await axios.post("/api/courses", values);
       if (response.data?.id) {
-        router.push(`/teacher/courses/${response.data.id}`);
+        router.push(`/teacher/quiz/${response.data.id}`);
         toast.success("Course created");
       } else {
         toast.error("Failed to retrieve quiz ID");

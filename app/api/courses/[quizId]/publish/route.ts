@@ -35,12 +35,16 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
       return new NextResponse("Missing required fields", { status: 400 });
     }
 
+    // Generate a random 6-digit access code
+    const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+
     const publishedQuiz = await db.quiz.update({
       where: {
         id: params.quizId,
       },
       data: {
         isPublished: true,
+        accessCode, // Save the generated access code
       },
     });
 
