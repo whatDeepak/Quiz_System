@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import StudentSkeleton from "./studentSkeleton";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 type TeacherCardProps = {
   id: string;
@@ -30,30 +32,91 @@ const TeacherCard: React.FC<TeacherCardProps> = ({
 }: TeacherCardProps) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [StudentCount, setStudentCount] = useState<number>(0);
+  const [isFollowing, setIsFollowing] = useState<boolean | null>(null); 
 
   const [loading, setLoading] = useState(true);
   const hrf = `instructors/${id}`;
+  // useEffect(() => {
+  //   const fetchStudents = async () => {
+  //     try {
+  //       const response = await fetch(`/api/instructors/${id}/students`);
+  //       console.log(response);
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         setStudents(data.students); // Assuming your API returns { students: Student[] }
+  //         setStudentCount(data.totalStudentsCount);
+  //       } else {
+  //         console.error("Failed to fetch students data");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching students data:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchStudents();
+  // }, [id]);
   useEffect(() => {
-    const fetchStudents = async () => {
+    const fetchStudentsAndFollowStatus = async () => {
       try {
-        const response = await fetch(`/api/instructors/${id}/students`); // Adjust API endpoint as per your setup
-        console.log(response);
-        if (response.ok) {
-          const data = await response.json();
-          setStudents(data.students); // Assuming your API returns { students: Student[] }
-          setStudentCount(data.totalStudentsCount);
+        const [studentResponse, followResponse] = await Promise.all([
+          fetch(`/api/instructors/${id}/students`),
+          fetch(`/api/follow/${id}`), // API endpoint to check follow status
+        ]);
+        
+
+        if (studentResponse.ok) {
+          const studentData = await studentResponse.json();
+          setStudents(studentData.students);
+          setStudentCount(studentData.totalStudentsCount);
         } else {
           console.error("Failed to fetch students data");
         }
+
+        console.log("Follow status: ", followResponse)
+        if (followResponse.ok) {
+          const followData = await followResponse.json();
+          setIsFollowing(followData.isFollowing); // Set initial follow status from API
+        }
       } catch (error) {
-        console.error("Error fetching students data:", error);
+        console.error("Error fetching data:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStudents();
+    fetchStudentsAndFollowStatus();
   }, [id]);
+
+
+  const handleFollowToggle = async () => {
+    try {
+      // Start the loading state
+      setIsFollowing((prev) => !prev); // Optimistically toggle the state
+  
+      const method = isFollowing ? "DELETE" : "POST";
+      const response = await axios({
+        method,
+        url: `/api/follow/${id}`,
+      });
+  
+      if (response.status === 200) {
+        if (isFollowing) {
+          toast.success("Unfollowed successfully");
+        } else {
+          toast.success("Followed successfully");
+        }
+      } else {
+        console.error("Failed to toggle follow status");
+        toast.error("Failed to toggle follow status");
+      }
+    } catch (error) {
+      console.error("Error toggling follow status:", error);
+      toast.error("Error toggling follow status");
+    }
+  };
+
   return (
     <>
       <Card className="group hover:shadow-sm transition   bg-gray-100 hover:bg-gray-200 rounded-lg   relative  md:max-w-[460px] ">
@@ -85,12 +148,21 @@ const TeacherCard: React.FC<TeacherCardProps> = ({
             )}
             <div className="flex items-center justify-between space-x-1 sm:space-x-3 ">
               <p className="font-medium text-xs sm:text-lg    m-0 ">{name}</p>
-              <Link href={hrf}>
+              {/* <Link href={hrf}>
                 <Button variant="outline" className="rounded-full w-28 sm:w-full text-[10px] sm:text-xs px-2 h-7 sm:h-9 sm:px-4 sm:py-2">
                   Explore Courses{" "}
                   <ArrowRight className="font-extralight pl-1  w-4 h-3 sm:h-4  sm:w-6" />{" "}
                 </Button>
-              </Link>
+              </Link> */}
+                {isFollowing !== null && (
+              <Button
+                onClick={handleFollowToggle}
+                variant="outline"
+                className="rounded-full w-28 sm:w-full text-[10px] sm:text-xs px-2 h-7 sm:h-9 sm:px-4 sm:py-2"
+              >
+                {isFollowing ? "Unfollow" : "Follow"}
+              </Button>
+            )}
             </div>
           </div>
         </div>

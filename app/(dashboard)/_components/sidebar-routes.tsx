@@ -40,11 +40,11 @@ const teacherRoutes = [
     label: "Analytics",
     href: "/teacher/analytics",
   },
-  {
-    icon: Bell,
-    label: "Announcements",
-    href: "/teacher/announcements", 
-  }
+  // {
+  //   icon: Bell,
+  //   label: "Announcements",
+  //   href: "/teacher/announcements", 
+  // }
 ]
 
 export const SidebarRoutes = () => {
