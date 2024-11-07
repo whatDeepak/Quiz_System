@@ -70,6 +70,7 @@ model Quiz {
   @@index([userId])
   @@fulltext([title])
 }
+
 model TeacherFollower {
   id         String   @id @default(cuid()) @map("_id")
   userId     String

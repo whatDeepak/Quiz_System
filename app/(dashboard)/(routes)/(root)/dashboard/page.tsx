@@ -12,6 +12,7 @@ import DashboardCoursesCard from "./_components/dashboard-courses";
 import { trackUserActivity } from "@/lib/trackUserActivity";
 import axios from "axios";
 import toast from "react-hot-toast";
+import DashboardQuizzesCard from "./_components/dashboard-quizes";
 
 const font = Poppins({
   subsets: ["latin"],
@@ -70,7 +71,8 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row">
         {/* Main content area */}
         <div className="flex-1 p-4 space-y-6 md:mr-72">
-          <DashboardCoursesCard userId={user.id!} />
+          {/* <DashboardCoursesCard userId={user.id!} /> */}
+          <DashboardQuizzesCard userId={user.id!} />
         </div>
       </div>
     </>
