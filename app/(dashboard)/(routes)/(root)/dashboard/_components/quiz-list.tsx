@@ -20,7 +20,6 @@ export const QuizList: React.FC<QuizListProps> = ({ items }) => {
   const path = usePathname();
   const isCollectionPage = path.includes("collection");
   const isInstructorPage = path.includes("instructors");
-  console.log("Items passed to Quiz cards: ", items);
 
   return (
     <>

@@ -35,7 +35,6 @@ const DashboardQuizzesCard: React.FC<DashboardQuizzesCardProps> = ({
         const response = await fetch(`/api/dashboardquizzes?userId=${userId}`);
         const data: DashboardQuizzes = await response.json();
         setDashboardQuizzes(data);
-        console.log("quizes fetched: ",data);
       } catch (error) {
         console.error("Failed to fetch dashboard quizzes:", error);
       } finally {

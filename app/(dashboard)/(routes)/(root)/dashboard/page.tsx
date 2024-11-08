@@ -8,8 +8,6 @@ import { db } from "@/lib/db";
 import  CalendarDateRangePicker  from "../../../_components/date-range-picker";
 import DoughnutChart from "../../../_components/doughnutChart";
 import { redirect } from "next/navigation";
-import DashboardCoursesCard from "./_components/dashboard-courses";
-import { trackUserActivity } from "@/lib/trackUserActivity";
 import axios from "axios";
 import toast from "react-hot-toast";
 import DashboardQuizzesCard from "./_components/dashboard-quizes";
