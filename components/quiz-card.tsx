@@ -15,6 +15,7 @@ interface QuizCardProps {
   teacherName?: string;
   questionsCount: number;
   accessCode: string;  // Access code for the quiz
+  isAttempted: boolean;  // Flag to determine if quiz has been attempted
 }
 
 export const QuizCard: React.FC<QuizCardProps> = ({
@@ -24,7 +25,8 @@ export const QuizCard: React.FC<QuizCardProps> = ({
   isActive,
   teacherName,
   questionsCount,
-  accessCode
+  accessCode,
+  isAttempted // new prop
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -60,23 +62,32 @@ export const QuizCard: React.FC<QuizCardProps> = ({
           <span>{questionsCount} {questionsCount === 1 ? "Question" : "Questions"}</span>
         </div>
 
-        {/* Status (Active/Inactive) */}
+        {/* Status (Attempted) */}
         <div className="mt-2">
-          {isActive ? (
-            <span className="text-green-500 text-base">Active</span>
+          {isAttempted ? (
+            <span className="text-blue-500 text-base">Attempted</span>
           ) : (
-            <span className="text-red-500 text-base">Inactive</span>
+            <span className="text-green-500 text-base">Active</span>
           )}
         </div>
 
-        {/* Start Quiz Button */}
+        {/* Button Text */}
         <div className="mt-2">
-          <button 
-            onClick={() => setIsModalOpen(true)} 
-            className="px-4 py-2 bg-blue-500 text-white rounded-lg"
-          >
-            Start Quiz
-          </button>
+          {isAttempted ? (
+            <button 
+              onClick={() => router.push(`/quiz/${id}`)} 
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+              Check Quiz
+            </button>
+          ) : (
+            <button 
+              onClick={() => setIsModalOpen(true)} 
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+            >
+              Start Quiz
+            </button>
+          )}
         </div>
       </div>
 

@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         description: true,
         userId: true,
         createdAt: true,
-        isActive:true,
+        isActive: true,
         questions: {
           select: {
             id: true,
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
             title: true,
             description: true,
             userId: true,
-            isActive:true,
+            isActive: true,
             questions: {
               select: {
                 id: true,
@@ -78,14 +78,22 @@ export async function GET(req: Request) {
     });
     const teacherNames = Object.fromEntries(teachers.map(t => [t.id, t.name]));
 
-    // Step 6: Map teacher names to quizzes
-    const activeQuizzesWithNames = activeQuizzes.map(quiz => ({
-      ...quiz,
-      teacherName: teacherNames[quiz.userId],
-    }));
+    // Step 6: Map teacher names to quizzes and set isAttempted to true if attempted
+    const activeQuizzesWithNames = activeQuizzes.map(quiz => {
+      // Check if this quiz has been attempted
+      const isAttempted = attemptedQuizzes.some(attempt => attempt.quizId === quiz.id);
+      
+      return {
+        ...quiz,
+        teacherName: teacherNames[quiz.userId],
+        isAttempted: isAttempted, // Set isAttempted to true if quiz is attempted
+      };
+    });
+
     const attemptedQuizzesWithNames = attemptedQuizzes.map(attempt => ({
       ...attempt.quiz,
       teacherName: teacherNames[attempt.quiz.userId],
+      isAttempted: true, // These quizzes are already attempted
     }));
 
     return NextResponse.json({

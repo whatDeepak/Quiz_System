@@ -10,6 +10,7 @@ interface QuizWithProgress extends Quiz {
   progress: number | null;
   teacherName: string;
   questions: Question[];
+  isAttempted: boolean;  // Add the isAttempted field
 }
 
 interface QuizListProps {
@@ -43,6 +44,7 @@ export const QuizList: React.FC<QuizListProps> = ({ items }) => {
               isActive={item.isActive}
               questionsCount={questionsCount} // Pass the questions count here
               accessCode={item.accessCode ?? ""}
+              isAttempted={item.isAttempted}  // Pass the isAttempted prop here
             />
           );
         })}
