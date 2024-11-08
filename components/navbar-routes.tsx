@@ -47,11 +47,11 @@ export const NavbarRoutes = () => {
           </Link>
         ) : null}
 
-        {!isTeacherPage && (
+        {/* {!isTeacherPage && (
 
           <NotificationBar />
          
-        )}
+        )} */}
         <UserNav />
       </div>
     </>

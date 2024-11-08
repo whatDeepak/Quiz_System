@@ -49,6 +49,7 @@ export async function PATCH(
             option3: question.option3,
             option4: question.option4,
             answer: question.answer,
+            idx: question.idx,
           },
         });
       } else {

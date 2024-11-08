@@ -52,7 +52,7 @@ export const AnnouncementForm = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await axios.post(`/api/courses/${courseId}/announcements`, values);
+      await axios.post(`/api/quizzes/${courseId}/announcements`, values);
       toast.success("Announcement Added");
       form.reset();
       toggleEdit();
@@ -81,7 +81,7 @@ export const AnnouncementForm = ({
         <p className={
           "text-sm mt-2 text-slate-500 italic"
         }>
-           No content
+          No content
         </p>
       )}
       {isEditing && (
