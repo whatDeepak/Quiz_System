@@ -33,12 +33,6 @@ interface CategoryData {
 const Dashboard = () => {
   const user = useCurrentUser();
   const [showDialog, setShowDialog] = useState(false);
-  const [chartData, setChartData] = useState<{
-    labels: string[];
-    data: number[];
-  }>({ labels: [], data: [] });
-  const [checkInShown, setCheckInShown] = useState(false);
-  const [checkInDates, setCheckInDates] = React.useState<string[]>([]);
 
   if (!user) {
     redirect("/");

@@ -1,7 +1,7 @@
 // components/DashboardQuizzesCard.tsx
 
 import React, { useState, useEffect } from "react";
-import { Quiz } from "@prisma/client"; // Assuming Quiz model from Prisma
+import { Question, Quiz } from "@prisma/client"; // Assuming Quiz model from Prisma
 import { InfoCard } from "./info-card";
 import { CheckCircle, Clock } from "lucide-react";
 import SkeletonLoader from "./skeleton-loader";
@@ -10,7 +10,8 @@ import { QuizList } from "./quiz-list";
 
 type QuizWithProgress = Quiz & {
   progress: number | null; // Assuming progress field to indicate quiz completion
-  teacherName: string
+  teacherName: string;
+  questions: Question[];
 };
 
 interface DashboardQuizzesCardProps {

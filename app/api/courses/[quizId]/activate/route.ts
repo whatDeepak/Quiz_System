@@ -22,19 +22,35 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Update quiz to be unpublished and set accessCode to null
-    const unpublishedQuiz = await db.quiz.update({
+    const quiz = await db.quiz.findUnique({
+      where: {
+        id: params.quizId,
+      },
+      include: {
+        questions: true,
+      },
+    });
+
+    if (!quiz || !quiz.title || quiz.questions.length === 0) {
+      return new NextResponse("Missing required fields", { status: 400 });
+    }
+
+    // Generate a random 6-digit access code
+    const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const activatedQuiz = await db.quiz.update({
       where: {
         id: params.quizId,
       },
       data: {
-        isPublished: false,
+        isActive: true,
+        accessCode, // Save the generated access code
       },
     });
 
-    return NextResponse.json(unpublishedQuiz);
+    return NextResponse.json(activatedQuiz);
   } catch (error) {
-    console.log("[QUIZ_UNPUBLISH]", error);
+    console.log("[QUIZ_ACTIVE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

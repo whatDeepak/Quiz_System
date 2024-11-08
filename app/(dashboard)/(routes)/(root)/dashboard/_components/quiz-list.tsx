@@ -1,14 +1,15 @@
 "use client";
 
 import React from "react";
-import { Quiz } from "@prisma/client";
+import { Question, Quiz } from "@prisma/client";
 import { QuizCard } from "@/components/quiz-card";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface QuizWithProgress extends Quiz {
   progress: number | null;
-  teacherName: string
+  teacherName: string;
+  questions: Question[];
 }
 
 interface QuizListProps {
@@ -19,7 +20,7 @@ export const QuizList: React.FC<QuizListProps> = ({ items }) => {
   const path = usePathname();
   const isCollectionPage = path.includes("collection");
   const isInstructorPage = path.includes("instructors");
-  console.log("Items passed to Quiz cards: ",items)
+  console.log("Items passed to Quiz cards: ", items);
 
   return (
     <>
@@ -29,16 +30,23 @@ export const QuizList: React.FC<QuizListProps> = ({ items }) => {
           isCollectionPage || isInstructorPage ? "md:grid-cols-3 lg:grid-cols-4" : ""
         )}
       >
-        {items.map((item) => (
-          <QuizCard
-            key={item.id}
-            id={item.id}
-            title={item.title}
-            teacherName={item.teacherName}
-            description={item.description ?? undefined}  // Ensure `description` is `undefined` if `null`
-            isActive={item.isActive}
-          />
-        ))}
+        {items.map((item) => {
+          // Calculate the number of questions for this quiz
+          const questionsCount = item.questions?.length || 0;
+
+          return (
+            <QuizCard
+              key={item.id}
+              id={item.id}
+              title={item.title}
+              teacherName={item.teacherName}
+              description={item.description ?? undefined} // Ensure `description` is `undefined` if `null`
+              isActive={item.isActive}
+              questionsCount={questionsCount} // Pass the questions count here
+              accessCode={item.accessCode ?? ""}
+            />
+          );
+        })}
       </div>
 
       {items.length === 0 && (

@@ -23,18 +23,19 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
     }
 
     // Update quiz to be unpublished and set accessCode to null
-    const unpublishedQuiz = await db.quiz.update({
+    const deactivateQuiz = await db.quiz.update({
       where: {
         id: params.quizId,
       },
       data: {
-        isPublished: false,
+        isActive: false,
+        accessCode: null, // Set accessCode to null
       },
     });
 
-    return NextResponse.json(unpublishedQuiz);
+    return NextResponse.json(deactivateQuiz);
   } catch (error) {
-    console.log("[QUIZ_UNPUBLISH]", error);
+    console.log("[QUIZ_DEACTIVATE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

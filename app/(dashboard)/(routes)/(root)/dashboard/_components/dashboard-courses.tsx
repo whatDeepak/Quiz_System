@@ -34,8 +34,7 @@ const DashboardCoursesCard: React.FC<DashboardCoursesCardProps> = ({
     const fetchDashboardCourses = async () => {
       try {
         const response = await fetch(`/api/dashboardcourses?userId=${userId}`);
-        const data: DashboardCourses = await response.json();
-        setDashboardCourses(data);
+        const data: DashboardCourses = await response.json();        setDashboardCourses(data);
       } catch (error) {
         console.error("Failed to fetch dashboard courses:", error);
       } finally {
