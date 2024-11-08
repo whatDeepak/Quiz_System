@@ -5,10 +5,12 @@ import { Quiz } from "@prisma/client"; // Assuming Quiz model from Prisma
 import { InfoCard } from "./info-card";
 import { CheckCircle, Clock } from "lucide-react";
 import SkeletonLoader from "./skeleton-loader";
+import { QuizList } from "./quiz-list";
 // import { QuizzesList } from "./QuizzesList"; // Assuming a component for rendering quizzes
 
 type QuizWithProgress = Quiz & {
   progress: number | null; // Assuming progress field to indicate quiz completion
+  teacherName: string
 };
 
 interface DashboardQuizzesCardProps {
@@ -31,8 +33,8 @@ const DashboardQuizzesCard: React.FC<DashboardQuizzesCardProps> = ({
       try {
         const response = await fetch(`/api/dashboardquizzes?userId=${userId}`);
         const data: DashboardQuizzes = await response.json();
-        console.log("quizes fetched: ",data);
         setDashboardQuizzes(data);
+        console.log("quizes fetched: ",data);
       } catch (error) {
         console.error("Failed to fetch dashboard quizzes:", error);
       } finally {
@@ -69,7 +71,7 @@ const DashboardQuizzesCard: React.FC<DashboardQuizzesCardProps> = ({
       {activeQuizzes.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-normal pb-2">Active Quizzes</h2>
-          {/* <QuizzesList items={activeQuizzes} /> */}
+          <QuizList items={activeQuizzes} />
         </div>
       )}
 
@@ -77,7 +79,7 @@ const DashboardQuizzesCard: React.FC<DashboardQuizzesCardProps> = ({
       {attemptedQuizzes.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-normal pb-2">Attempted Quizzes</h2>
-          {/* <QuizzesList items={attemptedQuizzes} /> */}
+          <QuizList items={attemptedQuizzes} />
         </div>
       )}
 

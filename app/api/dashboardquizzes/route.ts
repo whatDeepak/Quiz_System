@@ -11,43 +11,32 @@ export async function GET(req: Request) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Step 1: Fetch teachers the user is following
+    // Step 1: Fetch the teacher IDs the user follows
     const followedTeachers = await db.teacherFollower.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        teacherId: true, // Only need teacher IDs
-      },
+      where: { userId },
+      select: { teacherId: true },
     });
-
-    // Get the list of teacher IDs the user is following
     const followedTeacherIds = followedTeachers.map(f => f.teacherId);
-       console.log(followedTeacherIds)
-    // Step 2: Fetch active quizzes created by teachers the user follows
+
+    // Step 2: Fetch active quizzes created by followed teachers
     const activeQuizzes = await db.quiz.findMany({
       where: {
         isActive: true,
-        userId: {
-          in: followedTeacherIds,  // Only quizzes from followed teachers
-        },
+        userId: { in: followedTeacherIds },
       },
       select: {
         id: true,
         title: true,
         description: true,
         userId: true,
-        isActive: true,
         createdAt: true,
+        isActive:true
       },
     });
-    console.log("Active quiz: ", activeQuizzes)
 
-    // Step 3: Fetch quizzes the user has attempted
+    // Step 3: Fetch attempted quizzes for the current user
     const attemptedQuizzes = await db.quizAttempt.findMany({
-      where: {
-        userId,
-      },
+      where: { userId },
       select: {
         quizId: true,
         quiz: {
@@ -55,19 +44,41 @@ export async function GET(req: Request) {
             id: true,
             title: true,
             description: true,
+            userId: true,
+            isActive:true
           },
         },
       },
     });
 
-    // Map attempted quizzes to easily access
-    const attemptedQuizIds = attemptedQuizzes.map((attempt) => attempt.quizId);
-    console.log("attempted quizes: ",attemptedQuizIds)
-    // Step 4: Return quizzes the user can attempt and quizzes they've already attempted
+    // Step 4: Gather all unique userIds from active and attempted quizzes
+    const teacherIds = [
+      ...new Set([
+        ...activeQuizzes.map(quiz => quiz.userId),
+        ...attemptedQuizzes.map(attempt => attempt.quiz.userId),
+      ]),
+    ];
+
+    // Step 5: Fetch user names for these teacherIds
+    const teachers = await db.user.findMany({
+      where: { id: { in: teacherIds } },
+      select: { id: true, name: true },
+    });
+    const teacherNames = Object.fromEntries(teachers.map(t => [t.id, t.name]));
+
+    // Step 6: Map teacher names to quizzes
+    const activeQuizzesWithNames = activeQuizzes.map(quiz => ({
+      ...quiz,
+      teacherName: teacherNames[quiz.userId],
+    }));
+    const attemptedQuizzesWithNames = attemptedQuizzes.map(attempt => ({
+      ...attempt.quiz,
+      teacherName: teacherNames[attempt.quiz.userId],
+    }));
+
     return NextResponse.json({
-      activeQuizzes,
-      attemptedQuizzes: attemptedQuizzes.map((attempt) => attempt.quiz),
-      attemptedQuizIds, // List of quiz IDs the user has already attempted
+      activeQuizzes: activeQuizzesWithNames,
+      attemptedQuizzes: attemptedQuizzesWithNames,
     });
   } catch (error) {
     console.error("[Fetch_Quizzes_for_Dashboard]", error);

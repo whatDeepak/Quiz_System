@@ -15,16 +15,17 @@ enum UserRole {
 }
 
 model User {
-  id              String           @id @default(cuid()) @map("_id")
-  name            String?
-  email           String?          @unique
-  emailVerified   DateTime?
-  image           String?
-  role            UserRole?        @default(USER)
-  accounts        Account[]
-  notifications   Notification[]
-  quizAttempts    QuizAttempt[]
-  following       TeacherFollower[] @relation("UserFollowing") // Add this relation field
+  id            String            @id @default(cuid()) @map("_id")
+  name          String?
+  email         String?           @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole?         @default(USER)
+  accounts      Account[]
+  notifications Notification[]
+  // quizzes       Quiz[]
+  quizAttempts  QuizAttempt[]
+  following     TeacherFollower[] @relation("UserFollowing") // Add this relation field
 }
 
 model Account {
@@ -47,9 +48,9 @@ model Account {
 }
 
 model Teacher {
-  id    String @id @default(cuid()) @map("_id")
-  email String @unique
-  followers       TeacherFollower[] @relation("TeacherFollowers")
+  id        String            @id @default(cuid()) @map("_id")
+  email     String            @unique
+  followers TeacherFollower[] @relation("TeacherFollowers")
 }
 
 model Quiz {
@@ -58,58 +59,59 @@ model Quiz {
   description String?
   isPublished Boolean @default(false)
   isActive    Boolean @default(false) // New field for active status
-  accessCode  String?  @unique         // New field for access code
+  accessCode  String? @unique // New field for access code
 
-  userId      String
-  questions   Question[] @relation("QuizQuestions")  // Cascade delete for questions
+  userId       String
+  // user         User          @relation(fields: [userId], references: [id])
+  questions    Question[]    @relation("QuizQuestions") // Cascade delete for questions
   quizAttempts QuizAttempt[] @relation("QuizAttempts") // Cascade delete for quiz attempts
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@fulltext([title])
 }
 
 model TeacherFollower {
-  id         String   @id @default(cuid()) @map("_id")
-  userId     String
-  teacherId  String
+  id        String @id @default(cuid()) @map("_id")
+  userId    String
+  teacherId String
 
-  user       User     @relation("UserFollowing", fields: [userId], references: [id], onDelete: Cascade)
-  teacher    Teacher  @relation("TeacherFollowers", fields: [teacherId], references: [id], onDelete: Cascade)
+  user    User    @relation("UserFollowing", fields: [userId], references: [id], onDelete: Cascade)
+  teacher Teacher @relation("TeacherFollowers", fields: [teacherId], references: [id], onDelete: Cascade)
 
   @@unique([userId, teacherId]) // Ensures a user can follow a teacher only once
 }
 
 model Question {
-  id         String   @id @default(cuid()) @map("_id")
-  text       String
-  type       QuestionType
-  option1    String?  // Individual options for MCQ
-  option2    String?
-  option3    String?
-  option4    String?
-  answer     String?  // Single answer field for NORMAL questions
+  id      String       @id @default(cuid()) @map("_id")
+  text    String
+  type    QuestionType
+  option1 String? // Individual options for MCQ
+  option2 String?
+  option3 String?
+  option4 String?
+  answer  String? // Single answer field for NORMAL questions
 
-  quizId     String
-  quiz       Quiz     @relation("QuizQuestions", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for questions
+  quizId String
+  quiz   Quiz   @relation("QuizQuestions", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for questions
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([quizId])
 }
 
 model QuizAttempt {
-  id         String   @id @default(cuid()) @map("_id")
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
-  quizId     String
-  quiz       Quiz     @relation("QuizAttempts", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
-  score      Int
-  answers    Json     // Store answers in JSON format
-  createdAt  DateTime @default(now())
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
+  quizId    String
+  quiz      Quiz     @relation("QuizAttempts", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for quiz attempts
+  score     Int
+  answers   Json // Store answers in JSON format
+  createdAt DateTime @default(now())
 
   @@unique([userId, quizId])
 }
@@ -119,15 +121,14 @@ enum QuestionType {
   MCQ
 }
 
-
 model Notification {
-  id            String   @id @default(cuid()) @map("_id")
-  userId        String
-  quizId        String
-  isRead        Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  id        String   @id @default(cuid()) @map("_id")
+  userId    String
+  quizId    String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
 
-  user          User     @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id])
 
   @@index([userId, isRead])
   @@index([quizId])
