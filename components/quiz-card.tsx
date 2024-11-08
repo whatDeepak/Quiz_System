@@ -5,7 +5,6 @@ import React from "react";
 interface QuizCardProps {
   id: string;
   title: string;
-  description?: string;  // Make description optional
   isActive: boolean;
   teacherName?: string
 }
@@ -13,7 +12,6 @@ interface QuizCardProps {
 export const QuizCard: React.FC<QuizCardProps> = ({
   id,
   title,
-  description,
   isActive,
   teacherName
 }) => {

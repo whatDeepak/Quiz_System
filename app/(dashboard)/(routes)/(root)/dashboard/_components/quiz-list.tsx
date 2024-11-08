@@ -35,7 +35,6 @@ export const QuizList: React.FC<QuizListProps> = ({ items }) => {
             id={item.id}
             title={item.title}
             teacherName={item.teacherName}
-            description={item.description ?? undefined}  // Ensure `description` is `undefined` if `null`
             isActive={item.isActive}
           />
         ))}
