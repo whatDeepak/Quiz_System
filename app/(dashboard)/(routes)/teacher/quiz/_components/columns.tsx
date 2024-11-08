@@ -55,10 +55,10 @@ function ActiveStatusCell({ isActive, quizId }: { isActive: boolean; quizId: str
   const handleToggleActive = async () => {
     try {
       if (active) {
-        await axios.patch(`/api/courses/${quizId}/deactivate`);
+        await axios.patch(`/api/quizzes/${quizId}/deactivate`);
         toast.success("Quiz deactivated");
       } else {
-        await axios.patch(`/api/courses/${quizId}/activate`);
+        await axios.patch(`/api/quizzes/${quizId}/activate`);
         toast.success("Quiz activated");
       }
       setActive((prev) => !prev);

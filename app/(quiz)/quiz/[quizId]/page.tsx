@@ -16,16 +16,17 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
     // Fetch quiz data using useEffect
     useEffect(() => {
         const fetchQuizData = async () => {
-          try {
-            const response = await axios.get(`/api/quiz/${params.quizId}`);
-            setQuiz(response.data);
-          } catch (error) {
-            console.error("Error fetching quiz:", error);
-          }
+            try {
+                const response = await axios.get(`/api/quizzes/quiz/${params.quizId}`);
+                const sortedQuestions = response.data.questions.sort((a: any, b: any) => a.idx - b.idx); // Sort questions by idx
+                setQuiz({ ...response.data, questions: sortedQuestions }); // Set the sorted quiz data
+            } catch (error) {
+                console.error("Error fetching quiz:", error);
+            }
         };
-    
+
         fetchQuizData();
-      }, [params.quizId]);
+    }, [params.quizId]);
 
     // Ensure quiz exists
     if (!quiz) {
@@ -53,7 +54,7 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
     const handleSubmit = async () => {
         // Submit the quiz and answers to the database (e.g., creating a quiz attempt)
         try {
-            await axios.post("/api/quiz/submit", {
+            await axios.post("/api/quizzes/quiz/submit", {
                 quizId: quiz.id,
                 answers,
             });

@@ -94,6 +94,8 @@ model Question {
   option4 String?
   answer  String? // Single answer field for NORMAL questions
 
+  idx    Int
+
   quizId String
   quiz   Quiz   @relation("QuizQuestions", fields: [quizId], references: [id], onDelete: Cascade) // Cascade delete for questions
 

@@ -28,10 +28,10 @@ export const QuizActions = ({
       setIsLoading(true);
 
       if (isPublished) {
-        await axios.patch(`/api/courses/${quizId}/unpublish`);
+        await axios.patch(`/api/quizzes/${quizId}/unpublish`);
         toast.success("Quiz unpublished");
       } else {
-        await axios.patch(`/api/courses/${quizId}/publish`);
+        await axios.patch(`/api/quizzes/${quizId}/publish`);
         toast.success("Quiz published");
       }
 
@@ -47,7 +47,7 @@ export const QuizActions = ({
     try {
       setIsLoading(true);
 
-      await axios.delete(`/api/courses/${quizId}`);
+      await axios.delete(`/api/quizzes/${quizId}`);
 
       toast.success("Quiz deleted");
       router.refresh();
