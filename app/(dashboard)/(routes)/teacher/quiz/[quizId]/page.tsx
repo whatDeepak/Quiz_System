@@ -4,7 +4,6 @@ import { CircleHelp, LayoutDashboard, ListChecks, File, ArrowLeft } from "lucide
 import { redirect } from "next/navigation";
 
 import { currentUser } from "@/lib/auth";
-import { DescriptionForm } from "./_components/description-form";
 import { Banner } from "@/components/banner";
 import { QuizTitleForm } from "./_components/quiz-title-form";
 import { QuizQuestionsForm } from "./_components/quiz-question-form";

@@ -1,6 +1,4 @@
-// components/QuizQuestionsForm.tsx
-
-"use client";
+"use client"
 
 import * as z from "zod";
 import axios from "axios";
@@ -46,6 +44,7 @@ const formSchema = z.object({
             option3: z.string().optional(),
             option4: z.string().optional(),
             answer: z.string().optional(),
+            idx: z.number().optional(),  // Add the idx field here
         })
     ),
 });
@@ -80,10 +79,16 @@ export const QuizQuestionsForm = ({
     };
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        // Ensure the idx field is assigned before submitting
+        const updatedQuestions = values.questions.map((question, idx) => ({
+            ...question,
+            idx, // Assign the current index as idx
+        }));
+
         try {
             await axios.patch(
-                `/api/courses/${quizId}/questions`,
-                values
+                `/api/quizzes/${quizId}/questions`,
+                { questions: updatedQuestions }
             );
             toast.success("Quiz questions updated");
             toggleEditing();
@@ -170,6 +175,7 @@ export const QuizQuestionsForm = ({
                                         </FormItem>
                                     )}
                                 />
+                                {/* Render options for MCQ type */}
                                 {form.watch(`questions.${index}.type`) === QuestionType.MCQ && (
                                     <>
                                         <FormField
@@ -279,7 +285,7 @@ export const QuizQuestionsForm = ({
                             <Button disabled={!isValid || isSubmitting} type="submit">
                                 Save
                             </Button>
-                            <Button variant="ghost" onClick={() => append({ text: "", type: QuestionType.NORMAL, option1: "", option2: "", option3: "", option4: "", answer: "" })}>
+                            <Button variant="ghost" onClick={() => append({ text: "", type: QuestionType.NORMAL, option1: "", option2: "", option3: "", option4: "", answer: "", idx: fields.length })}>
                                 Add a question
                             </Button>
                         </div>
@@ -288,7 +294,7 @@ export const QuizQuestionsForm = ({
             )}
             {!isEditing && (
                 <div className="mt-4">
-                     <ChapterQuestionsList items={initialData} onEdit={(id) => {}} />
+                    <ChapterQuestionsList items={initialData} onEdit={(id) => { }} />
                 </div>
             )}
         </div>

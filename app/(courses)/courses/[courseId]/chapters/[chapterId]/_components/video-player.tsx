@@ -62,7 +62,7 @@ export const VideoPlayer = ({
   const handleEnd = async () => {
     try {
       if (completeOnEnd) {
-        await axios.put(`/api/courses/${courseId}/chapters/${chapterId}/progress`, {
+        await axios.put(`/api/quizzes/${courseId}/chapters/${chapterId}/progress`, {
           isCompleted: true,
         });
 

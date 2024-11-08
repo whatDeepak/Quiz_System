@@ -38,19 +38,19 @@ export async function PATCH(req: Request, { params }: { params: { quizId: string
     // Generate a random 6-digit access code
     const accessCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const publishedQuiz = await db.quiz.update({
+    const activatedQuiz = await db.quiz.update({
       where: {
         id: params.quizId,
       },
       data: {
-        isPublished: true,
+        isActive: true,
         accessCode, // Save the generated access code
       },
     });
 
-    return NextResponse.json(publishedQuiz);
+    return NextResponse.json(activatedQuiz);
   } catch (error) {
-    console.log("[QUIZ_PUBLISH]", error);
+    console.log("[QUIZ_ACTIVE]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

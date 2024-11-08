@@ -8,8 +8,6 @@ import { db } from "@/lib/db";
 import  CalendarDateRangePicker  from "../../../_components/date-range-picker";
 import DoughnutChart from "../../../_components/doughnutChart";
 import { redirect } from "next/navigation";
-import DashboardCoursesCard from "./_components/dashboard-courses";
-import { trackUserActivity } from "@/lib/trackUserActivity";
 import axios from "axios";
 import toast from "react-hot-toast";
 import DashboardQuizzesCard from "./_components/dashboard-quizes";
@@ -33,12 +31,6 @@ interface CategoryData {
 const Dashboard = () => {
   const user = useCurrentUser();
   const [showDialog, setShowDialog] = useState(false);
-  const [chartData, setChartData] = useState<{
-    labels: string[];
-    data: number[];
-  }>({ labels: [], data: [] });
-  const [checkInShown, setCheckInShown] = useState(false);
-  const [checkInDates, setCheckInDates] = React.useState<string[]>([]);
 
   if (!user) {
     redirect("/");

@@ -19,7 +19,7 @@ export const CourseEnrollButton = ({
     try {
       setIsLoading(true);
 
-      const response = await axios.post(`/api/courses/${courseId}/enroll`);
+      const response = await axios.post(`/api/quizzes/${courseId}/enroll`);
 
       if (response.status === 200) {
         toast.success("Successfully enrolled in the course!");
