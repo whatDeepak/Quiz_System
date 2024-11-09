@@ -21,7 +21,6 @@ interface QuizCardProps {
 export const QuizCard: React.FC<QuizCardProps> = ({
   id,
   title,
-  description,
   isActive,
   teacherName,
   questionsCount,
