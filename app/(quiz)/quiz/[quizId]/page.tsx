@@ -3,26 +3,49 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CourseProgress } from "@/components/course-progress";
-import { ArrowLeft, ArrowRight, Timer } from "lucide-react";  // Import the Timer icon from lucide-react
+import { ArrowLeft, ArrowRight, Timer } from "lucide-react";
 import axios from "axios";
 import { IconBadge } from "@/components/icon-badge";
 
+type Question = {
+    id: string;
+    text: string;
+    type: "MCQ" | "NORMAL";
+    answer: string;
+    option1?: string;
+    option2?: string;
+    option3?: string;
+    option4?: string;
+    idx: number;
+};
+
+type Quiz = {
+    title: string;
+    questions: Question[];
+    timer: number;
+    quizAttempts: Array<{
+        answers: { idx: number; answer: string }[];
+        score: number;
+    }>;
+};
+
 const QuizPage = ({ params }: { params: { quizId: string } }) => {
-    const [quiz, setQuiz] = useState<any>(null);
-    const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [answers, setAnswers] = useState<any[]>([]);
-    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [quiz, setQuiz] = useState<Quiz | null>(null);
+    const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
+    const [answers, setAnswers] = useState<{ idx: number; answer: string }[]>([]);
+    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
     const [score, setScore] = useState<number | null>(null);
     const [modalMessage, setModalMessage] = useState<string>("");
     const [showModal, setShowModal] = useState<boolean>(false);
-    const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);  // State for confirmation modal
+    const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+    const [timer, setTimer] = useState<string>("00:00");  // Timer in mm:ss format
     const router = useRouter();
 
     useEffect(() => {
         const fetchQuizData = async () => {
             try {
                 const response = await axios.get(`/api/quizzes/quiz/${params.quizId}`);
-                const data = response.data;
+                const data = response.data as Quiz; // Type-cast response data to the Quiz type
 
                 if (data.quizAttempts?.length > 0) {
                     const attempt = data.quizAttempts[0];
@@ -31,8 +54,41 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
                     setIsSubmitted(true);
                 }
 
-                const sortedQuestions = data.questions.sort((a: any, b: any) => a.idx - b.idx);
+                const sortedQuestions = data.questions.sort((a, b) => a.idx - b.idx);
                 setQuiz({ ...data, questions: sortedQuestions });
+
+                const storedStartTime = localStorage.getItem(`quiz-start-time-${params.quizId}`);
+                const storedEndTime = localStorage.getItem(`quiz-end-time-${params.quizId}`);
+
+                if (storedEndTime && storedStartTime) {
+                    const endTime = parseInt(storedEndTime, 10);
+                    const currentTime = Date.now();
+                    let remainingTime = endTime - currentTime;
+
+                    if (remainingTime > 0) {
+                        updateTimerDisplay(remainingTime);
+
+                        const interval = setInterval(() => {
+                            remainingTime = endTime - Date.now();
+                            console.log("Remaining Time: ", remainingTime);  // Debug log
+
+                            if (remainingTime <= 0) {
+                                clearInterval(interval); // Ensure the interval is cleared
+                                setTimer("00:00");
+                                handleConfirmSubmit(); // Trigger quiz submission when time is up
+                            } else {
+                                updateTimerDisplay(remainingTime);
+                            }
+                        }, 1000);
+
+                        return () => clearInterval(interval); // Cleanup interval when component unmounts
+                    }
+                } else {
+                    const quizDuration = data.timer ? data.timer * 1000 : 0;
+                    const endTime = Date.now() + quizDuration;
+                    localStorage.setItem(`quiz-start-time-${params.quizId}`, Date.now().toString());
+                    localStorage.setItem(`quiz-end-time-${params.quizId}`, endTime.toString());
+                }
             } catch (error) {
                 console.error("Error fetching quiz:", error);
             }
@@ -41,39 +97,39 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
         fetchQuizData();
     }, [params.quizId]);
 
-    const handleAnswer = (answer: string) => {
-        const updatedAnswers = [...answers];
-        updatedAnswers[currentQuestionIndex] = {
-            idx: quiz.questions[currentQuestionIndex].idx,
-            answer,
-        };
-
-        setAnswers(updatedAnswers);
-        localStorage.setItem(`quiz-${params.quizId}`, JSON.stringify(updatedAnswers));
-    };
-
-    const handleNext = () => {
-        if (currentQuestionIndex < quiz.questions.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-        }
-    };
-
-    const handlePrev = () => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(currentQuestionIndex - 1);
-        }
+    const updateTimerDisplay = (remainingTime: number) => {
+        const minutes = Math.floor(remainingTime / 60000);
+        const seconds = Math.floor((remainingTime % 60000) / 1000);
+        setTimer(`${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`);
     };
 
     const handleSubmitQuiz = async () => {
+        console.log("Submitting quiz..."); // Debug log
         try {
-            const response = await axios.post(`/api/quizzes/quiz/${quiz.id}/submit`, { answers });
+            // Ensure answers are updated with the latest selection or input
+            const updatedAnswers = [...answers];
+    
+            // Always update the answer for the current question, ensuring it's set properly when time runs out
+            updatedAnswers[currentQuestionIndex] = {
+                idx: quiz?.questions[currentQuestionIndex].idx || 0,
+                answer: answers[currentQuestionIndex]?.answer || "", // Ensure any unmarked answers are captured
+            };
+    
+            setAnswers(updatedAnswers); // Update state explicitly
+            localStorage.setItem(`quiz-${params.quizId}`, JSON.stringify(updatedAnswers)); // Store in localStorage
+    
+            const response = await axios.post(`/api/quizzes/quiz/${params.quizId}/submit`, { answers: updatedAnswers });
+    
             localStorage.removeItem(`quiz-${params.quizId}`);
+            localStorage.removeItem(`quiz-start-time-${params.quizId}`);
+            localStorage.removeItem(`quiz-end-time-${params.quizId}`);
             setIsSubmitted(true);
-
-            const correctAnswersCount = answers.filter((answer, index) => answer.answer === quiz.questions[index].answer).length;
-            const percentage = (correctAnswersCount / quiz.questions.length) * 100;
+    
+            // Calculate score based on the updated answers
+            const correctAnswersCount = updatedAnswers.filter((answer, index) => answer.answer === quiz?.questions[index].answer).length;
+            const percentage = (correctAnswersCount / (quiz?.questions.length || 1)) * 100;
             setScore(correctAnswersCount);
-
+    
             let message = "";
             if (percentage >= 90) {
                 message = "Excellent! You got it right!";
@@ -84,11 +140,35 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
             } else {
                 message = "Needs improvement, but don't give up!";
             }
-
+    
             setModalMessage(message);
             setShowModal(true);
         } catch (error) {
             console.error("Error submitting quiz:", error);
+        }
+    };
+
+
+    const handleAnswer = (answer: string) => {
+        const updatedAnswers = [...answers];
+        updatedAnswers[currentQuestionIndex] = {
+            idx: quiz?.questions[currentQuestionIndex].idx || 0,
+            answer,
+        };
+
+        setAnswers(updatedAnswers);
+        localStorage.setItem(`quiz-${params.quizId}`, JSON.stringify(updatedAnswers));
+    };
+
+    const handleNext = () => {
+        if (currentQuestionIndex < (quiz?.questions.length || 0) - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+        }
+    };
+
+    const handlePrev = () => {
+        if (currentQuestionIndex > 0) {
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
         }
     };
 
@@ -129,13 +209,13 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
 
                 <div className="flex items-center gap-2">
                     <IconBadge icon={Timer} size="sm" />
-                    <span>{quiz.timer}</span>
+                    <span>{isSubmitted ? "00:00" : timer}</span>
                 </div>
             </div>
 
             {/* Question Navigation */}
             <div className="flex gap-4 mb-8 justify-start">
-                {quiz.questions.map((_question: any, index: number) => (
+                {quiz.questions.map((_, index) => (
                     <div
                         key={index}
                         className={`w-8 h-8 rounded-full border flex justify-center items-center ${currentQuestionIndex === index ? "bg-blue-500 text-white" : "bg-gray-200"}`}
@@ -183,7 +263,7 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
                             type="text"
                             value={answers[currentQuestionIndex]?.answer || ""}
                             onChange={(e) => handleAnswer(e.target.value)}
-                            className={`w-full p-2 border rounded-md mt-2 ${isSubmitted ? (answers[currentQuestionIndex]?.answer === question.answer ? "border-green-500" : "border-red-500") : ""}`}
+                            className={`w-full p-2 border rounded-md mt-2 ${isSubmitted && question ? (answers[currentQuestionIndex]?.answer === question.answer ? "border-green-500" : "border-red-500") : ""}`}
                             disabled={isSubmitted}
                         />
                     )}
