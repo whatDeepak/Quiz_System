@@ -51,7 +51,7 @@ export const QuizActions = ({
 
       toast.success("Quiz deleted");
       router.refresh();
-      router.push(`/teacher/courses/`);
+      router.push(`/teacher/quiz/`);
       router.refresh();
     } catch {
       toast.error("Something went wrong");

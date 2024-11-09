@@ -5,9 +5,9 @@ export const Logo= ()=>{
         <Link href="/dashboard"> 
         <div className="flex justify-start items-center leading-[117.02%] cursor-pointer font-poppins">
           <b className="text-[21px] sm:text-[25px] text-custom-primary">
-            Edu
+            Quiz
           </b>
-          <span className="font-poppins text-black text-[21px] sm:text-[25px]">cation</span>
+          <span className="font-poppins text-black text-[21px] sm:text-[25px]">zly</span>
         </div>
         </Link>
     )

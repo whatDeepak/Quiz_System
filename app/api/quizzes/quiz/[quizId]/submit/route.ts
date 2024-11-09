@@ -6,7 +6,6 @@ export async function POST(req: Request, { params }: { params: { quizId: string 
   try {
     // Get the current user
     const user = await currentUser();
-    console.log('Current user:', user); // Log the user info
     const userId = user?.id ?? "";
 
     // If there's no authenticated user, return unauthorized
@@ -17,8 +16,6 @@ export async function POST(req: Request, { params }: { params: { quizId: string 
     // Parse the request body to get the submitted answers
     const body = await req.json();
     const { answers } = body; // Assuming answers are now an array of { idx, answer } objects
-
-    console.log('Received answers:', answers);
 
     // Ensure answers are provided and are in the correct format (array of { idx, answer } objects)
     if (!answers || !Array.isArray(answers) || !answers.every(a => a.idx !== undefined && a.answer !== undefined)) {
@@ -34,8 +31,6 @@ export async function POST(req: Request, { params }: { params: { quizId: string 
         questions: true, // Include questions related to this quiz
       }
     });
-
-    console.log('Retrieved quiz:', quiz);
 
     if (!quiz) {
       return new NextResponse("Quiz not found", { status: 404 });
@@ -75,7 +70,6 @@ function calculateScore(questions: any[], answers: { idx: number; answer: string
 
   answers.forEach(({ idx, answer }) => {
     const correctAnswer = questionMap.get(idx); // Find correct answer by question idx
-    console.log('Correct answer:', correctAnswer, 'Submitted answer:', answer); // Log the comparison
 
     // Check if the submitted answer matches the correct answer
     if (answer === correctAnswer) {
