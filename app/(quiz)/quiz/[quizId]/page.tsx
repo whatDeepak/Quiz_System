@@ -6,6 +6,7 @@ import { CourseProgress } from "@/components/course-progress";
 import { ArrowLeft, ArrowRight, Timer } from "lucide-react";
 import axios from "axios";
 import { IconBadge } from "@/components/icon-badge";
+import { optional } from "zod";
 
 type Question = {
     id: string;
@@ -108,28 +109,28 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
         try {
             // Ensure answers are updated with the latest selection or input
             const updatedAnswers = [...answers];
-    
+
             // Always update the answer for the current question, ensuring it's set properly when time runs out
             updatedAnswers[currentQuestionIndex] = {
                 idx: quiz?.questions[currentQuestionIndex].idx || 0,
                 answer: answers[currentQuestionIndex]?.answer || "", // Ensure any unmarked answers are captured
             };
-    
+
             setAnswers(updatedAnswers); // Update state explicitly
             localStorage.setItem(`quiz-${params.quizId}`, JSON.stringify(updatedAnswers)); // Store in localStorage
-    
+
             const response = await axios.post(`/api/quizzes/quiz/${params.quizId}/submit`, { answers: updatedAnswers });
-    
+
             localStorage.removeItem(`quiz-${params.quizId}`);
             localStorage.removeItem(`quiz-start-time-${params.quizId}`);
             localStorage.removeItem(`quiz-end-time-${params.quizId}`);
             setIsSubmitted(true);
-    
+
             // Calculate score based on the updated answers
             const correctAnswersCount = updatedAnswers.filter((answer, index) => answer.answer === quiz?.questions[index].answer).length;
             const percentage = (correctAnswersCount / (quiz?.questions.length || 1)) * 100;
             setScore(correctAnswersCount);
-    
+
             let message = "";
             if (percentage >= 90) {
                 message = "Excellent! You got it right!";
@@ -140,7 +141,7 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
             } else {
                 message = "Needs improvement, but don't give up!";
             }
-    
+
             setModalMessage(message);
             setShowModal(true);
         } catch (error) {
@@ -227,7 +228,7 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
             </div>
 
             {/* Main Quiz Section */}
-            <div className="p-6 rounded-lg bg-[#f1f1f1] mb-8 h-[350px]">
+            <div className="p-6 rounded-lg bg-[#f1f1f1] mb-8 min-h-[400px]">
                 <div className="text-lg font-semibold">
                     Question {currentQuestionIndex + 1}
                 </div>
@@ -239,7 +240,30 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
                         <>
                             {[question.option1, question.option2, question.option3, question.option4].map((option, idx) =>
                                 option ? (
-                                    <div key={idx}>
+                                    <div
+                                        key={idx}
+                                        className={`group flex items-center justify-between p-3 rounded-lg border-l-4 border-gray-400 hover:shadow-lg hover:border-primary hover:border-custom-primary hover:scale-105 transition-all mb-2
+                    ${isSubmitted
+                                                ? (answers[currentQuestionIndex]?.answer === option
+                                                    ? 'border-green-500 hover:border-green-500' // Correct answer border
+                                                    : 'border-red-500 hover:border-red-500'   // Incorrect answer border
+                                                )
+                                                : ''
+                                            }`}
+                                        style={{
+                                            backgroundColor: '#e0e0e0', // Contrasting background
+                                        }}
+                                        onClick={() => handleAnswer(option)} // Handle click on the div
+                                    >
+                                        {/* Custom Left Line */}
+                                        <div className="h-full w-1 bg-custom-primary group-hover:bg-custom-primary"></div>
+
+                                        {/* Option Text */}
+                                        <label className="flex-1 text-left pl-2">
+                                            {option}
+                                        </label>
+
+                                        {/* Radio Button */}
                                         <input
                                             type="radio"
                                             name={`question-${question.id}`}
@@ -247,13 +271,8 @@ const QuizPage = ({ params }: { params: { quizId: string } }) => {
                                             checked={answers[currentQuestionIndex]?.answer === option}
                                             onChange={() => handleAnswer(option)}
                                             disabled={isSubmitted}
+                                            className="ml-2" // Hide the actual radio button
                                         />
-                                        <label>{option}</label>
-                                        {isSubmitted && answers[currentQuestionIndex]?.answer === option && (
-                                            <div className={`text-sm ${answers[currentQuestionIndex]?.answer === question.answer ? "text-green-500" : "text-red-500"}`}>
-                                                {answers[currentQuestionIndex]?.answer === question.answer ? "Correct!" : "Incorrect!"}
-                                            </div>
-                                        )}
                                     </div>
                                 ) : null
                             )}
