@@ -52,7 +52,7 @@ export async function DELETE(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { courseId: string; chapterId: string; quizId: string } }
+  { params }: { params: { quizId: string } }
 ) {
   try {
     const user = await currentUser();
@@ -65,7 +65,7 @@ export async function PATCH(
 
     const ownQuiz = await db.quiz.findUnique({
       where: {
-        id: params.courseId,
+        id: params.quizId,
         userId,
       },
     });

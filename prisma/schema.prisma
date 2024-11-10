@@ -60,6 +60,7 @@ model Quiz {
   isPublished Boolean @default(false)
   isActive    Boolean @default(false) // New field for active status
   accessCode  String? @unique // New field for access code
+  timer       Int?
 
   userId       String
   // user         User          @relation(fields: [userId], references: [id])

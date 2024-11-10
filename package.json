@@ -1,6 +1,6 @@
 {
-  "name": "lms-project",
-  "version": "0.1.0",
+  "name": "quiz-system",
+  "version": "1.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

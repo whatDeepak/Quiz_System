@@ -9,6 +9,7 @@ import { QuizTitleForm } from "./_components/quiz-title-form";
 import { QuizQuestionsForm } from "./_components/quiz-question-form";
 import { QuizActions } from "./_components/quiz-actions";
 import Link from "next/link";
+import { QuizTimerForm } from "./_components/quiz-timer-form";
 
 const CourseIdPage = async ({
     params
@@ -38,6 +39,7 @@ const CourseIdPage = async ({
 
   const requiredFields = [
     quiz.title,
+    quiz.timer,
     quiz.questions.length > 0
   ];
 
@@ -94,6 +96,10 @@ const CourseIdPage = async ({
               </div>
               <QuizTitleForm
                 initialData={quiz}
+                quizId={params.quizId}
+              />
+              <QuizTimerForm
+                initialData={{ ...quiz, timer: quiz.timer ?? 0 }}
                 quizId={params.quizId}
               />
             </div>
