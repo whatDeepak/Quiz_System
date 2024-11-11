@@ -8,8 +8,8 @@ const font = Poppins({
 
 interface HeaderProps {
   label: string;
-  type: "signIn"| "signUp" | "error"
-};
+  type: "signIn" | "signUp" | "error";
+}
 
 export const Header = ({
   label,
@@ -17,13 +17,15 @@ export const Header = ({
 }: HeaderProps) => {
   return (
     <div className="w-full flex flex-col gap-y-4 justify-start items-start">
-      <h1 className={cn(
-        "md:text-xl text-3xl font-semibold",
-        font.className,
-      )}>
-      {type==="signUp"? `Create your Account` : `Welcome Back!` }  
+      <h1
+        className={cn(
+          "text-md sm:text-lg md:text-xl lg:text-xl font-semibold",
+          font.className
+        )}
+      >
+        Welcome! Let&apos;s get you signed in.
       </h1>
-      <p className="text-muted-foreground text-sm md:text-xs">
+      <p className="text-muted-foreground text-xs md:text-sm lg:text-md">
         {label}
       </p>
     </div>

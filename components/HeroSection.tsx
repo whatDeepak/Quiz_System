@@ -42,7 +42,7 @@ export default function HeroSection(
                 src="photo.svg"
                 alt="hero section photo"
                 height={100}
-                width={613}
+                width={600}
                 className="h-auto max-w-[100%] inline-block "
               />
             </div>
